@@ -14,6 +14,8 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
     
+    subscriptions = db.relationship('Subscription', back_populates='subscriptions', lazy=True)
+    
     def __repr__(self):
         return f"<User {self.username}>"
     
