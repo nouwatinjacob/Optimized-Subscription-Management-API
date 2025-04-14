@@ -1,17 +1,20 @@
 from datetime import datetime
-from sqlalchemy import Numeric
+from sqlalchemy import Numeric, Integer, String, DateTime, Text
+from sqlalchemy.sql import func
+from sqlalchemy.orm import Mapped, mapped_column
 from decimal import Decimal
 from app.extensions import db
 
 
 class Plan(db.Model):
-    __tablename__ = 'plans'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
-    price = db.Column(Numeric(10, 2), nullable=False, default=Decimal('0.00'))
-    description = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.now)
+    id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    name: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False, default=Decimal('0.00'))
+    description: Mapped[str] = mapped_column(Text(), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     def __repr__(self):
         return f"<Plan {self.name}>"
