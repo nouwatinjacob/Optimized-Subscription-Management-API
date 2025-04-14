@@ -20,7 +20,7 @@ class User(db.Model):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
     
-    subscriptions: Mapped["Subscription"] = relationship('Subscription', back_populates='subscriptions', lazy='selectin')
+    # subscriptions: Mapped["Subscription"] = relationship('Subscription', back_populates='subscriptions', lazy='selectin')
     
     def __repr__(self):
         return f"<User {self.username}>"
