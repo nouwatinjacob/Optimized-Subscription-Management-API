@@ -61,7 +61,7 @@ def upgrade_subscription():
 
 @jwt_required
 @sub_bp.patch('/cancel')
-def caancel_subscription():
+def cancel_subscription():
     verify_jwt_in_request()
     data = request.get_json()
     user_id = get_jwt_identity()
@@ -74,3 +74,33 @@ def caancel_subscription():
     subscription.ended_at = utc_now()
     db.session.commit()
     return jsonify({"error": "Subscription cancelled"}), 200
+
+@jwt_required
+@sub_bp.get('/')
+def user_subscription_list():
+    verify_jwt_in_request()
+    user_id = get_jwt_identity()
+    
+    status_filter = request.args.get("status", None)
+
+    query = Subscription.query.filter_by(user_id=user_id)
+
+    if status_filter:
+        query = query.filter(Subscription.status == status_filter)
+
+    subscriptions = query.order_by(Subscription.started_at.desc()).all()
+    return  jsonify(sub_schema.dump(subscriptions, many=True)), 200
+
+
+@jwt_required()
+@sub_bp.get('/<int:subscription_id>')
+def retrieve_subscription(subscription_id):
+    verify_jwt_in_request()
+    user_id = get_jwt_identity()
+    
+    subscription = Subscription.query.filter_by(id=subscription_id, user_id=user_id).first()
+
+    if not subscription:
+        return {"error": "Subscription not found"}, 404
+
+    return  jsonify(sub_schema.dump(subscription)), 200
