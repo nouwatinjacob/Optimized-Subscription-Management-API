@@ -4,6 +4,7 @@ from .config import config
 from .extensions import db, jwt, migrate
 from .routes.user import user_bp
 from .routes.plan import plan_bp
+from .routes.subscription import sub_bp
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -28,6 +29,6 @@ def create_app():
     # register Blueprints
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(plan_bp, url_prefix='/plan')
-    
+    app.register_blueprint(sub_bp, url_prefix='/subscription')
 
     return app

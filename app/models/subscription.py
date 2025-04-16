@@ -1,10 +1,10 @@
 from app.extensions import db
 from datetime import datetime
-from sqlalchemy import Numeric, Integer, DateTime, Enum, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import Numeric, Integer, DateTime, Enum, ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from decimal import Decimal
 import enum
+from app.utils.time_util import utc_now
 
 class BillingFrequency(enum.Enum):
     monthly = 'monthly'
@@ -14,8 +14,10 @@ class Status(enum.Enum):
     active = 'active'
     cancel = 'cancel'
     expire = 'expire'
+    pending = 'pending'
     
 class Subscription(db.Model):
+    __tablename__ = "subscriptions"
 
     id: Mapped[int] = mapped_column(Integer(), primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer(), ForeignKey('user.id'), nullable=False)
@@ -26,11 +28,20 @@ class Subscription(db.Model):
     status: Mapped[Status] = mapped_column(
         Enum(Status), nullable=False, default=Status.active)
     started_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True, server_default=func.now())
+        DateTime(timezone=True), nullable=True, default=utc_now)
     ended_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    user: Mapped["User"] = relationship('User', back_populates='subscriptions', lazy='selectin')
-    plan: Mapped["Plan"] = relationship('Plan')
+    # Relationships to User and Plan
+    user: Mapped["User"] = relationship(
+        "User", back_populates="subscriptions"
+    )
+    plan: Mapped["Plan"] = relationship(
+        "Plan", back_populates="subscriptions"
+    )
+    
+    __table_args__ = (
+        Index("ix_user_status", "user_id", "status"),
+    )
 
     def __repr__(self):
         return f"<Subscription {self.user_id} -> {self.plan.name} ({self.frequency})>"

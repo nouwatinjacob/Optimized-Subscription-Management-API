@@ -1,7 +1,5 @@
 import pytest
 from decimal import Decimal
-from app.models.plan import Plan
-from app.extensions import db
 
 @pytest.fixture
 def payload():

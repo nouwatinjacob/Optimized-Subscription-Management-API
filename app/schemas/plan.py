@@ -8,7 +8,7 @@ class PlanSchema(Schema):
     
 class ListPlanSchema(Schema):
     id = fields.Int(dump_only=True)
-    name = fields.Str(required=True, validate=validate.Length(min=3, max=80))
-    description = fields.Str(required=True, validate=validate.Length(min=5, max=255))
-    price = fields.Decimal(as_string=True, required=True, validate=validate.Range(min=Decimal("0.00")))
+    name = fields.Str()
+    description = fields.Str()
+    price = fields.Decimal()
     created_at = fields.DateTime(dump_only=True)

@@ -4,9 +4,12 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import db
+from app.utils.time_util import utc_now
+from typing import List
 
 class User(db.Model):
-    """ User Model for storing user related details """
+    __tablename__ = "user"
+     
     id: Mapped[int] = mapped_column(Integer(), primary_key=True)
     username: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str]
@@ -14,13 +17,16 @@ class User(db.Model):
     last_name: Mapped[str] = mapped_column(String(80), nullable=False)
     password: Mapped[str] = mapped_column(String(128), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), default=utc_now
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now
     )
     
-    # subscriptions: Mapped["Subscription"] = relationship('Subscription', back_populates='subscriptions', lazy='selectin')
+    # Relationship to Subscription
+    subscriptions: Mapped[List["Subscription"]] = relationship(
+        "Subscription", back_populates="user", lazy=True
+    )
     
     def __repr__(self):
         return f"<User {self.username}>"
