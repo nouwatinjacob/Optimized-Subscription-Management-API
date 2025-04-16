@@ -10,3 +10,4 @@ app/models/__pycache__
 app/services/__pycache__
 instance
 migrations
+.flaskenv
