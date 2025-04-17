@@ -16,7 +16,7 @@ RESTful API using Python (Flask) backed by SQL (SQLite) for managing user subscr
 - A User can see all  his/her subscriptions(NB: can be filtered by status) ```domain/subscription/?status```
 - A User can see retrieve a subscriptions ```domain/subscription/?status=active```
 
-**NB:** You have to add the authorization token to the header of your request in order to access all subscription endpoints below e.g `Authorization: Bearer 94e052d826593f57118aa5c49b4d7b1786c37b6d`
+**NB:** You have to add the authorization token to the header of your request in order to access all subscription endpoints e.g `Authorization: Bearer 94e052d826593f57118aa5c49b4d7b1786c37b6d`
 
 ## Technologies
 
