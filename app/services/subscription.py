@@ -1,3 +1,4 @@
+from typing import Literal
 from app.models.subscription import Subscription, BillingFrequency, Status
 from app.utils.price_util import calculate_amount
 from app.utils.subscription_util import get_subscription_date_bound, get_downgrade_bound
@@ -14,6 +15,7 @@ def create_subscription(user, plan, frequency):
     # Check if the user have a running subscription
     active_subscription = Subscription.query.filter_by(user_id=user.id,
             status=Status.active).first()
+    
     if active_subscription:
         return None, "You still have an active subscription", 400
         
@@ -28,9 +30,11 @@ def create_subscription(user, plan, frequency):
     )
     db.session.add(subscription)
     db.session.commit()
+    db.session.refresh(subscription)
+    
     return subscription, None, 201
 
-def upgrade_sub(user, plan, frequency):
+def upgrade_sub(user, plan, frequency) -> tuple[None, Literal['You do not have active Subscription'], Literal[400]] | tuple[Subscription, None, Literal[201]]:
     active_subscription = Subscription.query.filter_by(user_id=user.id, status=Status.active).first()
     start_date, end_date =  get_subscription_date_bound(frequency)
     amount = calculate_amount(plan.price, frequency)
@@ -63,6 +67,7 @@ def upgrade_sub(user, plan, frequency):
 
 
 def downgrade_sub(active_subscription, plan, frequency):
+    
     start_date, end_date =  get_downgrade_bound(active_subscription.ended_at, frequency)
     amount = calculate_amount(plan.price, frequency)
     

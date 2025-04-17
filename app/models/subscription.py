@@ -33,10 +33,10 @@ class Subscription(db.Model):
 
     # Relationships to User and Plan
     user: Mapped["User"] = relationship(
-        "User", back_populates="subscriptions"
+        "User", back_populates="subscriptions", lazy="joined"
     )
     plan: Mapped["Plan"] = relationship(
-        "Plan", back_populates="subscriptions"
+        "Plan", back_populates="subscriptions", lazy="joined"
     )
     
     __table_args__ = (

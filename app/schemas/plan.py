@@ -10,5 +10,5 @@ class ListPlanSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str()
     description = fields.Str()
-    price = fields.Decimal()
+    price = fields.Decimal(as_string=True, places=2)
     created_at = fields.DateTime(dump_only=True)

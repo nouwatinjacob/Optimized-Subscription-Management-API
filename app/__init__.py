@@ -1,10 +1,11 @@
 import os
 from flask import Flask
+from flask_restx import Api
 from .config import config
 from .extensions import db, jwt, migrate
-from .routes.user import user_bp
-from .routes.plan import plan_bp
-from .routes.subscription import sub_bp
+from .routes.user import user_ns
+from .routes.plan import plan_ns
+from .routes.subscription import sub_ns
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -26,9 +27,18 @@ def create_app():
     # initialize JWT
     jwt.init_app(app)
     
-    # register Blueprints
-    app.register_blueprint(user_bp, url_prefix='/user')
-    app.register_blueprint(plan_bp, url_prefix='/plan')
-    app.register_blueprint(sub_bp, url_prefix='/subscription')
+    # Initialize Flask-RESTX
+    api = Api(
+        app,
+        version='1.0',
+        title='Optimized Subscription API',
+        description='API documentation for Subscription Management',
+        doc='/docs'
+    )
+    
+    # Register RESTX Namespaces instead of Blueprints
+    api.add_namespace(user_ns, path='/user')
+    api.add_namespace(plan_ns, path='/plan')
+    api.add_namespace(sub_ns, path='/subscription')
 
     return app
